@@ -1,5 +1,5 @@
 # LSBluetoothManager
-A Simple BLE Demo Base Running On iPhone And Peripheral
+A Simple BLE Demo Running On iPhone And Peripheral
 
 
 ## 1. 概念

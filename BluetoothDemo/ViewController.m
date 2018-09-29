@@ -26,18 +26,20 @@
     peripheralsArr = [NSMutableArray array];
     
     manager =  [LSBluetoothManager shareManager];
-    manager.delegate = self;
-
-   
-}
-
-
-- (void)viewDidAppear:(BOOL)animated {
+    
     if (0 >= peripheralsArr.count) {
-         [manager startScanDevicesHasNamePrefix:nil];
+        [manager startScanDevicesHasNamePrefix:nil];
     } else {
         [self.tableView reloadData];
     }
+   
+   
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    manager.delegate = self;
 }
     
 

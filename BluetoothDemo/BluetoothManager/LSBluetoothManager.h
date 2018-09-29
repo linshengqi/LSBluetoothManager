@@ -18,7 +18,7 @@
  advertisementData 最小包含三条信息
  {
  kCBAdvDataIsConnectable = 1;
- kCBAdvDataLocalName = "DOGNESS_5_00E012345679";
+ kCBAdvDataLocalName = "DOGNESS_5_00E012345679";  // kCBAdvDataLocalName有时候会是null
  kCBAdvDataServiceUUIDs =     (
  FFCC
  );
@@ -67,21 +67,14 @@
 
 // 判断获取某一台设备是否在线,这里凭蓝牙名称判断
 - (BOOL)isOnLine:(NSString *_Nonnull)peripheralName  seviceUUID:(NSString *_Nonnull)seviceUUID;
-//- (BOOL)isOnLine:(CBPeripheral *_Nonnull)peripheral;
 
 // 断开某一台设备
 - (void)disconect:(CBPeripheral *_Nullable)peripheral;
 
-// 写入数据，这里的命令是NSString -> NSData
-- (void)writeWithCMD:(NSString *_Nonnull)CMDString;
-//- (void)writeWithSeviceUUID:(NSString * _Nonnull )seviceUUID CharacteristicWriteUUID:(NSString *_Nonnull)characteristicWriteUUID CharacteristicNotifyUUID:(NSString *_Nonnull)characteristicNotifyUUID CMD:(NSString *_Nonnull)CMDString;
+// 写入数据，这里的命令是NSString -> NSData，没有进行hex处理
+//- (void)writeWithCMD:(NSString *_Nonnull)CMDString;
+- (void)writeWithSeviceUUID:(NSString * _Nonnull )seviceUUID CharacteristicWriteUUID:(NSString *_Nonnull)characteristicWriteUUID CharacteristicNotifyUUID:(NSString *_Nonnull)characteristicNotifyUUID CMD:(NSString *_Nonnull)CMDString;
 
-
-/*
- 问题点1：不能连续写
- [manager writeWithCMD:@"sens0000000000000000"];
- [manager writeWithCMD:@"senr0000000000000000"];
- 
- */
 @end
+
 

@@ -96,7 +96,7 @@ A Simple BLE Demo Running On iPhone And Peripheral
 // 断开某一台设备
 - (void)disconect:(CBPeripheral *_Nullable)peripheral;
 
-// 写入数据，但是支持多条命令同时写
+// 写入数据，支持多条命令同时写
 //- (void)writeWithCMD:(NSString *_Nonnull)CMDString;
 - (void)writeWithSeviceUUID:(NSString * _Nonnull )seviceUUID CharacteristicWriteUUID:(NSString *_Nonnull)characteristicWriteUUID CharacteristicNotifyUUID:(NSString *_Nonnull)characteristicNotifyUUID CMD:(NSString *_Nonnull)CMDString;
 ```

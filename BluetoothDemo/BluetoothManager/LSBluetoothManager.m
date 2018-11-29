@@ -60,21 +60,6 @@
 }
 
 
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
-//    NSLog(@"old : %@  new : %@",[change objectForKey:@"old"],[change objectForKey:@"new"]);
-    if (self.isWritingfinished && self.cmdArray != nil && self.cmdArray.count > 0 ) {
-        NSMutableDictionary *dictM = self.cmdArray.firstObject;
-        [self writeWithSeviceUUID:dictM[@"seviceUUID"] CharacteristicWriteUUID:dictM[@"characteristicWriteUUID"] CharacteristicNotifyUUID:dictM[@"characteristicNotifyUUID"] CMD: dictM[@"CMDString"]];
-        [self.cmdArray removeObject:dictM];
-    }
-}
-
-
--(void)dealloc{
-    
-    [self removeObserver:self forKeyPath:@"isWritingfinished" context:nil];
-}
-
 #pragma mark - public
 - (void)startScanDevicesHasNamePrefix:(NSString *)nameprefix {
     namePrefix = nameprefix;
@@ -399,6 +384,23 @@
         NSLog(@"写入失败：%@",error.localizedDescription);
     }
 
+}
+
+
+#pragma mark - KVO
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
+    //    NSLog(@"old : %@  new : %@",[change objectForKey:@"old"],[change objectForKey:@"new"]);
+    if (self.isWritingfinished && self.cmdArray != nil && self.cmdArray.count > 0 ) {
+        NSMutableDictionary *dictM = self.cmdArray.firstObject;
+        [self writeWithSeviceUUID:dictM[@"seviceUUID"] CharacteristicWriteUUID:dictM[@"characteristicWriteUUID"] CharacteristicNotifyUUID:dictM[@"characteristicNotifyUUID"] CMD: dictM[@"CMDString"]];
+        [self.cmdArray removeObject:dictM];
+    }
+}
+
+#pragma mark - dealloc
+-(void)dealloc{
+    
+    [self removeObserver:self forKeyPath:@"isWritingfinished" context:nil];
 }
 
 @end

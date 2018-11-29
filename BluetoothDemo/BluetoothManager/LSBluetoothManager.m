@@ -21,8 +21,6 @@
     NSMutableArray <NSString *>*peripheralsUUIDArrM;   // 蓝牙设备UUID数组
     NSString *namePrefix;  // 蓝牙设备名称前缀
     CBPeripheral *connectedPeripheral; // 连接上的蓝牙设备
-    //    dispatch_queue_t peripheralStateQueue;
-    //    dispatch_group_t peripheralStategroup;
     BOOL isWritingfinished;
 }
 
@@ -57,28 +55,13 @@
         self.cmdArray = [NSMutableArray array];
         self.isWritingfinished = YES;
         [self addObserver:self forKeyPath:@"isWritingfinished" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-        
-        //                peripheralStateQueue = dispatch_queue_create("com.LSBluetoothManager.peripheralState", DISPATCH_QUEUE_SERIAL);
-        //                peripheralStategroup = dispatch_group_create();
-        //        dispatch_group_async(peripheralStategroup, peripheralStateQueue, ^{
-        
-        //        });
-        
-        
-        
-        //        dispatch_group_notify(peripheralStategroup, dispatch_get_main_queue(), ^{
-        
-        
-        //        });
-        
-        
     }
     return self;
 }
 
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
-    NSLog(@"old : %@  new : %@",[change objectForKey:@"old"],[change objectForKey:@"new"]);
+//    NSLog(@"old : %@  new : %@",[change objectForKey:@"old"],[change objectForKey:@"new"]);
     if (self.isWritingfinished && self.cmdArray != nil && self.cmdArray.count > 0 ) {
         NSMutableDictionary *dictM = self.cmdArray.firstObject;
         [self writeWithSeviceUUID:dictM[@"seviceUUID"] CharacteristicWriteUUID:dictM[@"characteristicWriteUUID"] CharacteristicNotifyUUID:dictM[@"characteristicNotifyUUID"] CMD: dictM[@"CMDString"]];
@@ -95,7 +78,6 @@
 #pragma mark - public
 - (void)startScanDevicesHasNamePrefix:(NSString *)nameprefix {
     namePrefix = nameprefix;
-    //    dispatch_group_notify(peripheralStategroup, dispatch_get_main_queue(), ^{
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (self->peripheralState == CBManagerStatePoweredOn) {
             [self->centralManager stopScan];
@@ -106,8 +88,6 @@
             [alert show];
         }
     });
-    
-    //    });
     
 }
 
@@ -130,7 +110,6 @@
 }
 
 
-//
 - (BOOL)isOnLine:(NSString *_Nonnull)peripheralName  seviceUUID:(NSString *)seviceUUID{
     if (peripheralName.length < 1 || !peripheralName) {
         NSLog(@"设备名为空");
@@ -149,14 +128,13 @@
     [self->centralManager scanForPeripheralsWithServices:nil options:nil];
     NSArray *array =  [centralManager retrieveConnectedPeripheralsWithServices:@[[CBUUID UUIDWithString:seviceUUID]]];
     for (CBPeripheral * Peripheral in array) {
-        NSLog(@"已经连上的设备：%@",Peripheral);
+        NSLog(@"已经连接的设备：%@",Peripheral);
         if ([Peripheral.name isEqualToString:peripheralName]) {
             [self->centralManager stopScan];
             return YES;
             break;
         }
     }
-    //     [self->centralManager stopScan];
     return NO;
 }
 
@@ -289,8 +267,8 @@
  */
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
-    NSLog(@"连接失败");
-    [centralManager connectPeripheral:peripheral options:nil];
+    NSLog(@"%@连接失败",peripheral.name);
+//    [centralManager connectPeripheral:peripheral options:nil];
     if (self.delegate && [self.delegate respondsToSelector:@selector(manager:connectedDevice:state:)]) {
         [self.delegate manager:self connectedDevice:peripheral state:NO];
     }
@@ -308,8 +286,8 @@
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(nullable NSError *)error
 {
-    NSLog(@"断开连接");
-    [centralManager connectPeripheral:peripheral options:nil];
+    NSLog(@"%@断开连接",peripheral.name);
+//    [centralManager connectPeripheral:peripheral options:nil];
     if (self.delegate && [self.delegate respondsToSelector:@selector(manager:connectedDevice:state:)]) {
         [self.delegate manager:self connectedDevice:peripheral state:NO];
     }
@@ -326,7 +304,7 @@
 {
     [centralManager stopScan];
     connectedPeripheral = peripheral;
-    NSLog(@"连接设备:%@成功",peripheral.name);
+    NSLog(@"连接:%@成功",peripheral.name);
     peripheral.delegate = self;
     // services:传入nil  代表扫描所有服务
     [peripheral discoverServices:nil];

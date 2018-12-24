@@ -12,18 +12,7 @@
 
 
 @interface LSBluetoothModel : NSObject
-
 @property(nonatomic, strong) CBPeripheral *peripheral;
-/*
- advertisementData 至少包含三条信息
- {
- kCBAdvDataIsConnectable = 1;
- kCBAdvDataLocalName = "DOGNESS_5_00E012345679";  // kCBAdvDataLocalName有时候会是null
- kCBAdvDataServiceUUIDs =     (
- FFCC
- );
- }
- */
 @property(nonatomic, strong) NSDictionary<NSString *,id> *advertisementData;
 @property(nonatomic, strong) NSNumber *RSSI;
 @end
@@ -69,7 +58,7 @@
 // 断开某一台设备
 - (void)disconect:(CBPeripheral *_Nullable)peripheral;
 
-// 写入数据，这里的命令是NSString -> NSData，没有进行hex处理
+// 写入数据
 - (void)writeWithPeripheral:(CBPeripheral *_Nonnull)peripheral ServiceUUID:(NSString * _Nonnull )ServiceUUID CharacteristicWriteUUID:(NSString *_Nonnull)characteristicWriteUUID CharacteristicNotifyUUID:(NSString *_Nonnull)characteristicNotifyUUID CMD:(NSString *_Nonnull)CMDString;
 
 @end

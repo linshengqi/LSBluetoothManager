@@ -27,10 +27,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-   
-    self.manager =  [LSBluetoothManager shareManager];
-    self.manager.delegate = self;
-    [self.manager startScanDevicesHasNamePrefix:nil];
+   self.manager.delegate = self;
 }
 
 -(void)initUI {
@@ -41,12 +38,14 @@
 
 - (void)initData {
     self.peripheralsArr = [NSMutableArray array];
-
+    self.manager =  [LSBluetoothManager shareManager];
+    self.manager.delegate = self;
+    [self.manager startScanDevicesHasNamePrefix:nil];
 }
 
 -(void)refreshDeviceList {
     [self.peripheralsArr removeAllObjects];
-     [self.tableView reloadData];
+    [self.tableView reloadData];
     [self.manager startScanDevicesHasNamePrefix:nil];
 }
 
@@ -65,7 +64,7 @@
     }
     cell.textLabel.text = model.peripheral.name;
     if (model.peripheral.state == CBPeripheralStateConnected) {
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@,已连接,点击连接",model.RSSI];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@,已连接,点击断开",model.RSSI];
     } else {
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%@,未连接,点击连接",model.RSSI];
     }
@@ -75,13 +74,16 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    [self.manager stopScanDevices];
     LSBluetoothModel *model = self.peripheralsArr[indexPath.row];
     if (model.peripheral.state != CBPeripheralStateConnected) {
         [self.manager conect:model.peripheral ServiceUUID:@"FFCC" CharacteristicWriteUUID:@"FFC1" CharacteristicNotifyUUID:@"FFC2"];
+        [self.navigationController pushViewController:[ViewController2 new] animated:YES];
+    }else if (model.peripheral.state == CBPeripheralStateConnected) {
+        [self.manager disconect:model.peripheral];
     }
     
-    [self.navigationController pushViewController:[ViewController2 new] animated:YES];
+    
 }
 
 
@@ -90,5 +92,15 @@
     [self.tableView reloadData];
 }
 
-
+- (void)manager:(LSBluetoothManager *)manager connectedDevice:(CBPeripheral *)peripheral state:(BOOL)state {
+    NSLog(@"connectedDevicestate %d",state);
+    NSString *title = @"";
+    if (state == NO) {
+        title = [NSString stringWithFormat:@"%@断开连接",peripheral.name];
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:title message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil, nil];
+        [alert show];
+    }
+    
+    
+}
 @end

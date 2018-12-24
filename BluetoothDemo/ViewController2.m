@@ -100,7 +100,6 @@
 
         
     } else {
-        
         title = [NSString stringWithFormat:@"%@连接失败",peripheral.name];
     }
 

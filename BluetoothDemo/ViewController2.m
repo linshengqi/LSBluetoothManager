@@ -12,6 +12,7 @@
 @interface ViewController2 ()<LSBluetoothManagerDelegate>
 {
     LSBluetoothManager *manager;
+    CBPeripheral * connectedperipheral;
 }
 @end
 
@@ -22,12 +23,18 @@
     
     manager =  [LSBluetoothManager shareManager];
     manager.delegate = self;
+    
+    if ([manager isAuthorizationOpen]) {
+        NSLog(@"open");
+    }else {
+        NSLog(@"close");
+    }
 }
 
 - (IBAction)LEDMode:(UIButton *)sender {
     NSArray *arr = @[@"mode512559393000000",@"mode520550131930000",@"mode53105010030000",@"mode542552552550000",@"mode551141141140000",@"mode560041142140000",@"mode572140042550000"];
     for (NSInteger i = 0; i < arr.count; i++) {
-        [manager writeWithSeviceUUID:@"FFCC" CharacteristicWriteUUID:@"FFC1" CharacteristicNotifyUUID:@"FFC2" CMD:arr[i]];
+        [manager writeWithPeripheral:connectedperipheral ServiceUUID:@"FFCC" CharacteristicWriteUUID:@"FFC1" CharacteristicNotifyUUID:@"FFC2" CMD:arr[i]];
     }
    
 }
@@ -45,7 +52,6 @@
 
 - (IBAction)getBattery:(UIButton *)sender {
 //    [manager writeWithCMD:@"battery0000000000000"];
-    [manager writeWithSeviceUUID:@"FFCC" CharacteristicWriteUUID:@"FFC1" CharacteristicNotifyUUID:@"FFC2" CMD:@"battery0000000000000"];
 }
 
 
@@ -89,7 +95,7 @@
     NSLog(@"connectedDevicestate %d",state);
     NSString *title = @"";
     if (state == YES) {
-        
+        connectedperipheral = peripheral;
         title = [NSString stringWithFormat:@"%@连接成功",peripheral.name];
 
         

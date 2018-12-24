@@ -11,47 +11,54 @@
 #import "ViewController2.h"
 
 @interface ViewController ()<LSBluetoothManagerDelegate>
-{
-    NSMutableArray<LSBluetoothModel *> *peripheralsArr;
-    LSBluetoothManager *manager;
-}
+@property (strong, nonatomic) LSBluetoothManager *manager;
+@property (strong, nonatomic) NSMutableArray<LSBluetoothModel *> *peripheralsArr;
+
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = NSLocalizedString(@"Device List", nil);
+    [self initUI];
+    [self initData];
     
-    peripheralsArr = [NSMutableArray array];
-    
-    manager =  [LSBluetoothManager shareManager];
-    
-    if (0 >= peripheralsArr.count) {
-        [manager startScanDevicesHasNamePrefix:nil];
-    } else {
-        [self.tableView reloadData];
-    }
-   
-   
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    manager.delegate = self;
+   
+    self.manager =  [LSBluetoothManager shareManager];
+    self.manager.delegate = self;
+    [self.manager startScanDevicesHasNamePrefix:nil];
 }
-    
+
+-(void)initUI {
+    self.title = NSLocalizedString(@"Device List", nil);
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"Refresh_64px"] style:UIBarButtonItemStylePlain target:self action:@selector(refreshDeviceList)];
+}
+
+
+- (void)initData {
+    self.peripheralsArr = [NSMutableArray array];
+
+}
+
+-(void)refreshDeviceList {
+    [self.peripheralsArr removeAllObjects];
+     [self.tableView reloadData];
+    [self.manager startScanDevicesHasNamePrefix:nil];
+}
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return peripheralsArr.count;
-
+    return self.peripheralsArr.count;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    LSBluetoothModel *model = peripheralsArr[indexPath.row];
+    LSBluetoothModel *model = self.peripheralsArr[indexPath.row];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"UITableViewCell"];
@@ -69,18 +76,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    LSBluetoothModel *model = peripheralsArr[indexPath.row];
+    LSBluetoothModel *model = self.peripheralsArr[indexPath.row];
     if (model.peripheral.state != CBPeripheralStateConnected) {
-        [manager conect:model.peripheral SeviceUUID:@"FFCC" CharacteristicWriteUUID:@"FFC1" CharacteristicNotifyUUID:@"FFC2"];
+        [self.manager conect:model.peripheral ServiceUUID:@"FFCC" CharacteristicWriteUUID:@"FFC1" CharacteristicNotifyUUID:@"FFC2"];
     }
     
     [self.navigationController pushViewController:[ViewController2 new] animated:YES];
 }
 
 
-- (void)manager:(LSBluetoothManager *)manager didDiscoverDeveices:(NSMutableArray<LSBluetoothModel *> *)peripheralsArrM error:(NSError *)error {
-    
-    peripheralsArr = peripheralsArrM;
+- (void)manager:(LSBluetoothManager *)manager didDiscoverDeveice:(nonnull LSBluetoothModel *)peripheral error:(nullable NSError *)error {
+    [self.peripheralsArr addObject:peripheral];
     [self.tableView reloadData];
 }
 

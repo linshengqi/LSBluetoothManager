@@ -28,7 +28,7 @@
 // 连接某一台设备是否成功的结果，需要先调用- (void)conect:(CBPeripheral *)peripheral;
 - (void)manager:(LSBluetoothManager *_Nonnull)manager connectedDevice:(nonnull CBPeripheral *)peripheral state:(BOOL)state;
 
-// 写入数据是否成功结果，需要先调用writeWithPeripheral:(CBPeripheral *_Nonnull)peripheral ServiceUUID:(NSString * _Nonnull )ServiceUUID CharacteristicWriteUUID:(NSString *_Nonnull)characteristicWriteUUID CharacteristicNotifyUUID:(NSString *_Nonnull)characteristicNotifyUUID CMD:(NSString *_Nonnull)CMDString;
+// 写入数据结果，需要先调用writeWithPeripheral:(CBPeripheral *_Nonnull)peripheral ServiceUUID:(NSString * _Nonnull )ServiceUUID CharacteristicWriteUUID:(NSString *_Nonnull)characteristicWriteUUID CharacteristicNotifyUUID:(NSString *_Nonnull)characteristicNotifyUUID CMD:(NSString *_Nonnull)CMDString;
 - (void)manager:(LSBluetoothManager *_Nullable)manager didUpdateValueForCharacteristic:(nonnull CBCharacteristic *)characteristic receiveData:(NSData *_Nullable)receiveData error:(nullable NSError *)error;
 
 @end

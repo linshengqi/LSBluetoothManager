@@ -122,7 +122,7 @@
     NSArray *array =  [self.centralManager retrieveConnectedPeripheralsWithServices:@[[CBUUID UUIDWithString:ServiceUUID]]];
     for (CBPeripheral * device in array) {
         NSLog(@"已经连接的设备：%@",device);
-        if (device == peripheral) {
+        if (device == peripheral && device.state == CBPeripheralStateConnected) {
             [self.centralManager stopScan];
             return YES;
             break;
